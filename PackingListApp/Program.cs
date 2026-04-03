@@ -1,4 +1,4 @@
-namespace PackingList;
+namespace PackingListApp;
 
 class Program
 {
