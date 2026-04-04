@@ -38,6 +38,11 @@ namespace PackingListApp
             isPacked = false;
         }
 
+        public void SetPacked(bool value)
+        {
+            isPacked = value;
+        }
+
         public void UpdateQuantity(int quantity)
         {
             this.quantity = quantity;
