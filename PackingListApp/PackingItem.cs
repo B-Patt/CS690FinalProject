@@ -1,17 +1,46 @@
-namespace PackingListApp;
-
-public class PackingItem
+namespace PackingListApp
 {
-    private string name;
-    private int quantity;
-    private bool isPacked;
+    public class PackingItem
+    {
+        private string name;
+        private int quantity;
+        private bool isPacked;
 
-    public void MarkPacked() 
-    { }
+        public string Name
+        {
+            get { return name; }
+        }
 
-    public void MarkUnpacked() 
-    { }
+        public int Quantity
+        {
+            get { return quantity; }
+        }
 
-    public void UpdateQuantity(int quantity) 
-    { }
+        public bool IsPacked
+        {
+            get { return isPacked; }
+        }
+
+        public PackingItem(string name, int quantity)
+        {
+            this.name = name;
+            this.quantity = quantity;
+            this.isPacked = false;
+        }
+
+        public void MarkPacked()
+        {
+            isPacked = true;
+        }
+
+        public void MarkUnpacked()
+        {
+            isPacked = false;
+        }
+
+        public void UpdateQuantity(int quantity)
+        {
+            this.quantity = quantity;
+        }
+    }
 }

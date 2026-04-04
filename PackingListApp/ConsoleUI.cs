@@ -22,7 +22,7 @@ public class ConsoleUI
             
             if(choice == "Create New Packing List")
             {
-                CreateNewPackingList()
+                CreateNewPackingList();
             }
 
         } while (choice != "Exit");
