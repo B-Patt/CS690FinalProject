@@ -24,7 +24,7 @@ public class PackingListRepository
             return null;
         }
 
-        string[] lines = contents.Split(Environment.NewLine);
+        string[] lines = contents.Split('\n');
 
         string listName = lines[0];
         PackingList list = new PackingList(listName);
