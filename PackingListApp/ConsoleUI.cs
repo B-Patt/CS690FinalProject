@@ -115,8 +115,60 @@ public class ConsoleUI
 
     manager.SaveList(list);
 
-
 }
+
+private void AddItemToList(PackingList list)
+{
+    string name = AnsiConsole.Ask<string>("Item name:");
+    int qty = AnsiConsole.Ask<int>("Quantity:");
+
+    list.AddItem(new PackingItem(name, qty));
+    AnsiConsole.WriteLine("Item added.");
+}
+
+private void EditItemQuantity(PackingList list)
+{
+    string name = AnsiConsole.Ask<string>("Item to edit:");
+    PackingItem item = list.FindItem(name);
+
+    if (item == null)
+    {
+        AnsiConsole.WriteLine("Item not found.");
+        return;
+    }
+
+    int qty = AnsiConsole.Ask<int>("New quantity:");
+    item.SetQuantity(qty);
+
+    AnsiConsole.WriteLine("Quantity updated.");
+}
+
+private void RemoveItemFromList(PackingList list)
+{
+    string name = AnsiConsole.Ask<string>("Item to remove:");
+    bool removed = list.RemoveItem(name);
+
+    if (!removed)
+        AnsiConsole.WriteLine("Item not found.");
+    else
+        AnsiConsole.WriteLine("Item removed.");
+}
+
+private void TogglePackedStatus(PackingList list)
+{
+    string name = AnsiConsole.Ask<string>("Item to pack:");
+    PackingItem item = list.FindItem(name);
+
+    if (item == null)
+    {
+        AnsiConsole.WriteLine("Item not found.");
+        return;
+    }
+
+    item.SetPacked(!item.IsPacked);
+    AnsiConsole.WriteLine("Packed status updated.");
+
+
 
 }
 
