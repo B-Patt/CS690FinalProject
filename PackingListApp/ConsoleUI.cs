@@ -55,19 +55,68 @@ public class ConsoleUI
 
         if (list == null)
             {
-            AnsiConsole.MarkupLine("List not found.");
+            AnsiConsole.WriteLine("List not found.");
             return;
             }
 
-        AnsiConsole.MarkupLine($"Loaded list: {list.Name}");
-        AnsiConsole.MarkupLine("Items:");
+        ShowListContents(list);
+
+       // Enter List menu
+        ManageItemsMenu(list);
+    }
+    
+    private void ShowListContents(PackingList list)
+    {
+        AnsiConsole.WriteLine("Loaded list: {list.Name}");
+        AnsiConsole.WriteLine("Items:");
+
+        if(list.Items.Count == 0)
+        {
+            AnsiConsole.WriteLine("No items yet.");
+            return;
+        }
 
         foreach (PackingItem item in list.Items)
         {
             string packed = item.IsPacked ? "Packed" : "Not Packed";
-            AnsiConsole.MarkupLine($"- {item.Name} x{item.Quantity} ({packed})");
+            AnsiConsole.WriteLine("- {item.Name} x{item.quantity} ({packed})")
         }
     }
+
+    private void ManageItemsMenu(PackingList list)
+{
+    string choice;
+
+    do
+    {
+        choice = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("Manage Items in {list.Name}")
+                .AddChoices(
+                    "Add Item",
+                    "Edit Item Quantity",
+                    "Remove Item",
+                    "Packed Status",
+                    "Back"));
+
+        if (choice == "Add Item")
+            AddItemToList(list);
+
+        else if (choice == "Edit Item Quantity")
+            EditItemQuantity(list);
+
+        else if (choice == "Remove Item")
+            RemoveItemFromList(list);
+
+        else if (choice == "Packed Status")
+            TogglePackedStatus(list);
+
+    } while (choice != "Back");
+
+    manager.SaveList(list);
+
+
+}
 
 }
 
