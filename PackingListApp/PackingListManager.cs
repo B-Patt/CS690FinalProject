@@ -41,6 +41,11 @@ public class PackingListManager
         return repository.LoadList(name);
     }
 
+    public void SaveList(PackingList list)
+    {
+        repository.SaveList(list);
+    }
+
     public void DeleteList(string name)
     {
         repository.DeleteList(name);
