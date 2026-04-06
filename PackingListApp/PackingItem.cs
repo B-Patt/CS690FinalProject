@@ -43,7 +43,7 @@ namespace PackingListApp
             isPacked = value;
         }
 
-        public void UpdateQuantity(int quantity)
+        public void SetQuantity(int quantity)
         {
             this.quantity = quantity;
         }

@@ -26,16 +26,15 @@ namespace PackingListApp
             items.Add(item);
         }
 
-        public void RemoveItem(string itemName)
+        public bool RemoveItem(string itemName)
         {
-            for (int i = 0; i < items.Count; i++)
-            {
-                if (items[i].Name == itemName)
-                {
-                    items.RemoveAt(i);
-                    break;
-                }
-            }
+            PackingItem item = FindItem(itemName);
+
+            if(item == null)
+                return false;
+            
+            items.Remove(item);
+            return true;
         }
 
         public PackingItem FindItem(string itemName)
