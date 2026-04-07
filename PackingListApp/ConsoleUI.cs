@@ -294,7 +294,7 @@ public class ConsoleUI
         ShowListActionsMenu(choice);
     }
 
-    private void ShowListActionsMenu(string listname)
+    private void ShowListActionsMenu(string listName)
     {
         string choice;
 
@@ -302,7 +302,7 @@ public class ConsoleUI
         {
             choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                .Title($"Manage \"{listname}\"")
+                .Title($"Manage \"{listName}\"")
                 .AddChoices(
                     "Load (View) List",
                     "Rename List",
@@ -312,7 +312,7 @@ public class ConsoleUI
             
             if (choice == "Load (View) List")
             {
-                var list = manager.LoadList(listname);
+                var list = manager.LoadList(listName);
 
                 if (list == null)
                 {
@@ -325,11 +325,11 @@ public class ConsoleUI
             }
             else if (choice == "Rename List")
             {
-                listname = RenameListFlow(listname);
+                listName = RenameListFlow(listName);
             }
             else if (choice == "Delete List")
             {
-                DeleteListFlow(listname);
+                DeleteListFlow(listName);
                 return;
             }
             else if (choice == "Save & Exit Program")
