@@ -2,7 +2,7 @@ namespace PackingListApp;
 
 public static class Validator
 {
-    public static bool IsValidListName(string name)
+    public static bool IsValidlistName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
