@@ -1,0 +1,3 @@
+test rename
+toothbrush,1,True
+toothpicks,5,False

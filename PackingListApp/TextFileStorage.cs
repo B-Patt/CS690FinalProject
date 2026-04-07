@@ -32,6 +32,15 @@ public class TextFileStorage
         File.WriteAllText(fullPath, contents);
     }
 
+    public void RenameFile(string oldName, string newName)
+    {
+        string oldPath = Path.Combine(directoryPath, oldName + ".txt");
+        string newPath = Path.Combine(directoryPath, newName + ".txt");
+
+        if (File.Exists(oldPath))
+            File.Move(oldPath, newPath);
+    }
+
     public void DeleteFile(string name)
     {
         string fullPath = Path.Combine(directoryPath, name);

@@ -56,5 +56,12 @@ public class PackingListManager
         return repository.ListAll();
     }
 
+    public void RenameList(string oldName, string newName)
+    {
+        repository.RenameList(oldName, newName);
+    }
+
+
+
 }
 
