@@ -1,5 +1,6 @@
 ﻿namespace PackingListApp;
 
+using System.Security.AccessControl;
 using Spectre.Console;
 
 public class ConsoleUI
@@ -28,6 +29,10 @@ public class ConsoleUI
             {
                 LoadExistingPackingList();
             }
+            else if (choice == "Manage Saved Packing Lists")
+            {
+                ShowSavedListsMenu();
+            }
             
 
         } while (choice != "Exit");
@@ -54,17 +59,17 @@ public class ConsoleUI
                 "Load this list now",
                 "Return to Main Menu"));
 
-    if (choice == "Load this list now")
-    {
-        //Back to main menu or load new list
-        ShowListContents(newList);
-        ManageItemsMenu(newList);
+        if (choice == "Load this list now")
+        {
+            //Back to main menu or load new list
+            ShowListContents(newList);
+            ManageItemsMenu(newList);
+        }
+        else
+        {
+            return;
+        }
     }
-    else
-    {
-        return;
-    }
-}
 
 
 
@@ -140,107 +145,205 @@ public class ConsoleUI
             }
         } while (choice != "Back");
 
-    manager.SaveList(list);
-}
-
-
-private void AddItemToList(PackingList list)
-{
-    string name = AnsiConsole.Ask<string>("Item name:");
-    int qty = AnsiConsole.Ask<int>("Quantity:");
-
-    list.AddItem(new PackingItem(name, qty));
-    AnsiConsole.WriteLine("Item added.");
-
-    ShowListContents(list);
-}
-
-private void EditItemQuantity(PackingList list)
-{
-    if (list.Items.Count == 0)
-    {
-        AnsiConsole.WriteLine("No items to edit.");
-        return;
+        manager.SaveList(list);
     }
 
-    string itemName = AnsiConsole.Prompt(
-        new SelectionPrompt<string>()
-            .Title("Select an item to edit quantity")
-            .AddChoices(list.Items.Select(i => i.Name)));
 
-    PackingItem item = list.FindItem(itemName);
-
-    int qty = AnsiConsole.Ask<int>("New quantity:");
-    item.SetQuantity(qty);
-
-    AnsiConsole.WriteLine("Quantity updated.");
-
-    ShowListContents(list);
-
-}
-
-
-private void RemoveItemFromList(PackingList list)
-{
-    if (list.Items.Count == 0)
+    private void AddItemToList(PackingList list)
     {
-        AnsiConsole.WriteLine("No items to remove.");
-        return;
+        string name = AnsiConsole.Ask<string>("Item name:");
+        int qty = AnsiConsole.Ask<int>("Quantity:");
+
+        list.AddItem(new PackingItem(name, qty));
+        AnsiConsole.WriteLine("Item added.");
+
+        ShowListContents(list);
     }
 
-    // Build choices + Back option
-    var choices = list.Items.Select(i => i.Name).ToList();
-    choices.Add("Back");
+    private void EditItemQuantity(PackingList list)
+    {
+        if (list.Items.Count == 0)
+        {
+            AnsiConsole.WriteLine("No items to edit.");
+            return;
+        }
 
-    string choice = AnsiConsole.Prompt(
-        new SelectionPrompt<string>()
-            .Title("Select an item to remove")
+        string itemName = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("Select an item to edit quantity")
+                .AddChoices(list.Items.Select(i => i.Name)));
+
+        PackingItem item = list.FindItem(itemName);
+
+        int qty = AnsiConsole.Ask<int>("New quantity:");
+        item.SetQuantity(qty);
+
+        AnsiConsole.WriteLine("Quantity updated.");
+
+        ShowListContents(list);
+
+    }
+
+
+    private void RemoveItemFromList(PackingList list)
+    {
+        if (list.Items.Count == 0)
+        {
+            AnsiConsole.WriteLine("No items to remove.");
+            return;
+        }
+
+        // Build choices + Back option
+        var choices = list.Items.Select(i => i.Name).ToList();
+        choices.Add("Back");
+
+        string choice = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("Select an item to remove")
+                .AddChoices(choices));
+
+        if (choice == "Back")
+        {
+            return;
+        }
+
+        bool removed = list.RemoveItem(choice);
+
+        if (removed)
+            AnsiConsole.WriteLine("Item removed.");
+        else
+            AnsiConsole.WriteLine("Item not found.");
+        ShowListContents(list);
+    }
+
+    private void TogglePackedStatus(PackingList list)
+    {
+        if (list.Items.Count == 0)
+        {
+            AnsiConsole.WriteLine("No items to update.");
+            return;
+        }
+
+        // Build choices + Back option
+        var choices = list.Items.Select(i => i.Name).ToList();
+        choices.Add("Back");
+
+        string choice = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("Select an item to toggle packed status")
+                .AddChoices(choices));
+
+        if (choice == "Back")
+        {
+            return;
+        }
+
+        PackingItem item = list.FindItem(choice);
+
+        item.SetPacked(!item.IsPacked);
+
+        AnsiConsole.WriteLine(
+            $"Packed status updated: {item.Name} is now {(item.IsPacked ? "Packed" : "Not Packed")}");
+
+        ShowListContents(list);
+    }
+
+    private void ShowSavedListsMenu()
+    {
+        var lists = manager.ListAllLists();
+
+        if (lists.Count ==0)
+        {
+            AnsiConsole.WriteLine("No saved lists found");
+            return;
+        }
+
+        var choices = lists.ToList();
+        choices.Add("Back");
+        choices.Add("Save & Exit Program");
+
+        string choice = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+            .Title("Select saved lists:")
             .AddChoices(choices));
 
-    if (choice == "Back")
-    {
-        return;
+        if (choice == "Back")
+            return;
+
+        if (choice == "Save & Exit Program")
+        {
+            Environment.Exit(0);
+                    }
+        ShowListActionsMenu(choice);
     }
 
-    bool removed = list.RemoveItem(choice);
-
-    if (removed)
-        AnsiConsole.WriteLine("Item removed.");
-    else
-        AnsiConsole.WriteLine("Item not found.");
-    ShowListContents(list);
-}
-
-private void TogglePackedStatus(PackingList list)
-{
-    if (list.Items.Count == 0)
+    private void ShowListActionsMenu(string listname)
     {
-        AnsiConsole.WriteLine("No items to update.");
-        return;
+        string choice;
+
+        do
+        {
+            choice = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                .Title($"Manage \"{listname}\"")
+                .AddChoices(
+                    "Load List",
+                    "Rename List",
+                    "Delete List",
+                    "Back",
+                    "Save & Exit Program"));
+            
+            if (choice == "Load List")
+            {
+                var list = manager.LoadList(listname);
+
+                if (list == null)
+                {
+                    AnsiConsole.WriteLine("List coud not be found.");
+                    return;
+                }
+
+            ShowListContents(list);
+            ManageItemsMenu(list);
+            }
+            else if (choice == "Rename List")
+            {
+                listname = RenameListFlow(listname);
+            }
+            else if (choice == "Delete List")
+            {
+                DeleteListFlow(listname);
+                return;
+            }
+            else if (choice == "Save & Exit Program")
+            {
+                Environment.Exit(0);
+            }
+        } while (choice != "Back");
+    }
+    
+
+    private string RenameListFlow(string oldName)
+    {
+        string newName = AnsiConsole.Ask<string>("Enter new list name:");
+
+        manager.RenameList(oldName, newName);
+
+        AnsiConsole.WriteLine("List renamed.");
+
+        return newName;
     }
 
-    // Build choices + Back option
-    var choices = list.Items.Select(i => i.Name).ToList();
-    choices.Add("Back");
-
-    string choice = AnsiConsole.Prompt(
-        new SelectionPrompt<string>()
-            .Title("Select an item to toggle packed status")
-            .AddChoices(choices));
-
-    if (choice == "Back")
+    private void DeleteListFlow(string listName)
     {
-        return;
+        bool confirm = AnsiConsole.Confirm($"Delete \"{listName}\"?");
+
+        if (!confirm)
+            return;
+
+        manager.DeleteList(listName);
+
+        AnsiConsole.WriteLine("List deleted.");
     }
-
-    PackingItem item = list.FindItem(choice);
-
-    item.SetPacked(!item.IsPacked);
-
-    AnsiConsole.WriteLine(
-        $"Packed status updated: {item.Name} is now {(item.IsPacked ? "Packed" : "Not Packed")}");
-
-    ShowListContents(list);
-}
 
 }

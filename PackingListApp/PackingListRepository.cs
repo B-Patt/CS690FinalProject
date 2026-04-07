@@ -73,6 +73,10 @@ public class PackingListRepository
         storage.WriteFile(fileName, contents);
     }
 
+    public void RenameList(string oldName, string newName)
+    {
+        storage.RenameFile(oldName, newName);
+    }
 
     public void DeleteList(string name) 
     {
@@ -97,5 +101,8 @@ public class PackingListRepository
 
         return names;
     }
+
+
+
 
 }
