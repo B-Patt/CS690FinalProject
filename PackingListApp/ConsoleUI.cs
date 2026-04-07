@@ -75,15 +75,32 @@ public class ConsoleUI
 
     private void LoadExistingPackingList()
     {
-        string name = AnsiConsole.Ask<string>("Enter the name of the list to load:");
+        var files = manager.ListAllLists();
 
-        PackingList list = manager.LoadList(name);
-
-        if (list == null)
+        if (files.Count == 0)
             {
-            AnsiConsole.WriteLine("List not found.");
+            AnsiConsole.WriteLine("No saved lists found.");
             return;
             }
+
+        var choices = new List<string>(files);
+        choices.Add("Back");
+
+        string choice = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("Select a list to load")
+                .AddChoices(choices));
+
+        if (choice == "Back")
+            return;
+
+        var list = manager.LoadList(choice);
+
+        if (list == null)
+        {
+            AnsiConsole.WriteLine("Failed to load list.");
+            return;
+        }
 
         ShowListContents(list);
 
@@ -336,10 +353,12 @@ public class ConsoleUI
 
     private void DeleteListFlow(string listName)
     {
-        bool confirm = AnsiConsole.Confirm($"Delete \"{listName}\"?");
+        string confirm = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title($"Delete \"{listName}\"?")
+                .AddChoices("Yes", "No"));
 
-        if (!confirm)
-            return;
+        if (confirm == "Yes")
 
         manager.DeleteList(listName);
 
