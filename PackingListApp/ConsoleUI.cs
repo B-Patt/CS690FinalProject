@@ -287,13 +287,13 @@ public class ConsoleUI
                 new SelectionPrompt<string>()
                 .Title($"Manage \"{listname}\"")
                 .AddChoices(
-                    "Load List",
+                    "Load (View) List",
                     "Rename List",
                     "Delete List",
                     "Back",
                     "Save & Exit Program"));
             
-            if (choice == "Load List")
+            if (choice == "Load (View) List")
             {
                 var list = manager.LoadList(listname);
 

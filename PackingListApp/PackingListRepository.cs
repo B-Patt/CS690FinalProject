@@ -76,6 +76,13 @@ public class PackingListRepository
     public void RenameList(string oldName, string newName)
     {
         storage.RenameFile(oldName, newName);
+
+        var list = LoadList(newName);
+        if(list != null)
+        {
+            list.Rename(newName);
+            SaveList(list);
+        }
     }
 
     public void DeleteList(string name) 

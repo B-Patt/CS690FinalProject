@@ -49,5 +49,12 @@ namespace PackingListApp
 
             return null;
         }
-    }
+   
+
+        public void Rename(string newName)
+        {
+            name = newName;
+        }
+     }
+
 }
