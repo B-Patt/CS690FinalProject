@@ -2,66 +2,48 @@ namespace PackingListApp;
 
 public class PackingListManager
 {
-    private PackingListRepository repository;
+    private readonly TextFileStorage storage;
+    private readonly PackingListRepository repo;
 
     public PackingListManager()
     {
-        TextFileStorage storage = new TextFileStorage("PackingLists");
-
-        repository = new PackingListRepository(storage);
+        string folder = Path.Combine(AppContext.BaseDirectory, "PackingLists");
+        storage = new TextFileStorage(folder);
+        repo = new PackingListRepository(storage);
     }
-
 
     public PackingList CreateNewList(string name)
     {
-        if (!Validator.IsValidlistName(name))
-        {
+        if (string.IsNullOrWhiteSpace(name))
             return null;
-        }
 
-        //Check Duplicates
-        List<string> existing = repository.ListAll();
-        for (int i = 0; i < existing.Count; i++)
-        {
-            if (existing[i].ToLower() == name.ToLower())
-            {
-                return null;
-            }
-        }
-
-        PackingList list = new PackingList(name);
-
-        repository.SaveList(list);
-
+        var list = new PackingList(name);
+        SaveList(list);
         return list;
     }
 
     public PackingList LoadList(string name)
     {
-        return repository.LoadList(name);
+        return repo.LoadList(name);
     }
 
     public void SaveList(PackingList list)
     {
-        repository.SaveList(list);
-    }
-
-    public void DeleteList(string name)
-    {
-        repository.DeleteList(name);
-    }
-
-    public List<string> ListAllLists()
-    {
-        return repository.ListAll();
+        repo.SaveList(list);
     }
 
     public void RenameList(string oldName, string newName)
     {
-        repository.RenameList(oldName, newName);
+        repo.RenameList(oldName, newName);
     }
 
+    public void DeleteList(string name)
+    {
+        repo.DeleteList(name);
+    }
 
-
+    public List<string> ListAllLists()
+    {
+        return repo.ListAll();
+    }
 }
-
