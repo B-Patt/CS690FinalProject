@@ -14,7 +14,7 @@ public class PackingListManager
 
     public PackingList CreateNewList(string name)
     {
-        if (!Validator.IsValidlistName(name))
+        if (!Validator.IsValidListName(name))
         {
             return null;
         }
