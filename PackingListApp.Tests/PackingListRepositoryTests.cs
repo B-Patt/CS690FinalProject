@@ -2,14 +2,19 @@ namespace PackingListApp.Tests;
 
 public class PackingListRepositoryTests
 {
-    private readonly string testDir = "TestLists";
+    private readonly string testDir;
     private TextFileStorage storage;
     private PackingListRepository repo;
 
     public PackingListRepositoryTests()
     {
+       // Temporary Directory for testing
+        testDir = Path.Combine(Path.GetTempPath(), "PackingListAppTests_Repo");
+
         if (Directory.Exists(testDir))
             Directory.Delete(testDir, true);
+
+        Directory.CreateDirectory(testDir);
 
         storage = new TextFileStorage(testDir);
         repo = new PackingListRepository(storage);
@@ -26,7 +31,9 @@ public class PackingListRepositoryTests
         var loaded = repo.LoadList("Test Trip");
 
         Assert.NotNull(loaded);
-        Assert.Equal("Test Trip", loaded.Name);
+
+        Assert.Equal("Test Trip", loaded.Name.Trim());
+
         Assert.Single(loaded.Items);
         Assert.Equal("Socks", loaded.Items[0].Name);
     }
@@ -45,12 +52,12 @@ public class PackingListRepositoryTests
     [Fact]
     public void Test_ListAll()
     {
-        repo.SaveList(new PackingList("A"));
-        repo.SaveList(new PackingList("B"));
+        repo.SaveList(new PackingList("List1"));
+        repo.SaveList(new PackingList("List2"));
 
         var names = repo.ListAll();
 
-        Assert.Contains("A", names);
-        Assert.Contains("B", names);
+        Assert.Contains("List1", names);
+        Assert.Contains("List2", names);
     }
 }

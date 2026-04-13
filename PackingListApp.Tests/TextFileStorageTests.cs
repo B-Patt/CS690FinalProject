@@ -2,13 +2,18 @@ namespace PackingListApp.Tests;
 
 public class TextFileStorageTests
 {
-    private readonly string testDir = "TestLists";
+    private readonly string testDir;
     private TextFileStorage storage;
 
     public TextFileStorageTests()
     {
+        // Temporary Directory for testing
+        testDir = Path.Combine(Path.GetTempPath(), "PackingListAppTests_Storage");
+
         if (Directory.Exists(testDir))
             Directory.Delete(testDir, true);
+
+        Directory.CreateDirectory(testDir);
 
         storage = new TextFileStorage(testDir);
     }
@@ -16,10 +21,10 @@ public class TextFileStorageTests
     [Fact]
     public void Test_WriteAndReadFile()
     {
-        storage.WriteFile("test.txt", "hello");
+        storage.WriteFile("test.txt", "toothbrush");
         string contents = storage.ReadFile("test.txt");
 
-        Assert.Equal("hello", contents);
+        Assert.Equal("toothbrush", contents);
     }
 
     [Fact]
@@ -41,12 +46,12 @@ public class TextFileStorageTests
     [Fact]
     public void Test_ListFiles()
     {
-        storage.WriteFile("a.txt", "1");
-        storage.WriteFile("b.txt", "2");
+        storage.WriteFile("testfile1.txt", "1");
+        storage.WriteFile("testfile2.txt", "2");
 
         var files = storage.ListFiles();
 
-        Assert.Contains("a.txt", files);
-        Assert.Contains("b.txt", files);
+        Assert.Contains("testfile1.txt", files);
+        Assert.Contains("testfile2.txt", files);
     }
 }
