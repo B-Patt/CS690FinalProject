@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="PackingListApp.Tests/PackingListApp.Tests.csproj" />
+  <Project Path="PackingListApp/PackingListApp.csproj" />
+</Solution>
