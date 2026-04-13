@@ -2,23 +2,27 @@ namespace PackingListApp.Tests;
 
 public class PackingListManagerTests
 {
-    private readonly string testDir = "TestLists";
+    private readonly string testDir;
     private PackingListManager manager;
 
     public PackingListManagerTests()
     {
-        if (Directory.Exists(testDir))
-            Directory.Delete(testDir, true);
+        // Temporary Directory for testing
+        testDir = Path.Combine(Path.GetTempPath(), "PackingListAppTests_Manager");
 
-        // Override internal storage via reflection
-        var storage = new TextFileStorage(testDir);
-        var repo = new PackingListRepository(storage);
+    if (Directory.Exists(testDir))
+        Directory.Delete(testDir, true);
 
-        manager = new PackingListManager();
+    Directory.CreateDirectory(testDir);
 
-        typeof(PackingListManager)
-            .GetField("repository", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            .SetValue(manager, repo);
+    var storage = new TextFileStorage(testDir);
+    var repo = new PackingListRepository(storage);
+
+    manager = new PackingListManager();
+
+    typeof(PackingListManager)
+        .GetField("repo", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+        .SetValue(manager, repo);
     }
 
     [Fact]
@@ -55,4 +59,3 @@ public class PackingListManagerTests
         Assert.Null(manager.LoadList("Gone"));
     }
 }
-

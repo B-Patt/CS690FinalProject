@@ -1,9 +1,3 @@
-/workspaces/CS690FinalProject/PackingListApp/PackingListApp.Tests/obj/Debug/net10.0/PackingListApp.Tests.csproj.AssemblyReference.cache
-/workspaces/CS690FinalProject/PackingListApp/PackingListApp.Tests/obj/Debug/net10.0/PackingListApp.Tests.GeneratedMSBuildEditorConfig.editorconfig
-/workspaces/CS690FinalProject/PackingListApp/PackingListApp.Tests/obj/Debug/net10.0/PackingListApp.Tests.AssemblyInfoInputs.cache
-/workspaces/CS690FinalProject/PackingListApp/PackingListApp.Tests/obj/Debug/net10.0/PackingListApp.Tests.AssemblyInfo.cs
-/workspaces/CS690FinalProject/PackingListApp/PackingListApp.Tests/obj/Debug/net10.0/PackingListApp.Tests.csproj.CoreCompileInputs.cache
-/workspaces/CS690FinalProject/PackingListApp/PackingListApp.Tests/obj/Debug/net10.0/PackingListApp.Tests.sourcelink.json
 /workspaces/CS690FinalProject/PackingListApp.Tests/bin/Debug/net10.0/.msCoverageSourceRootsMapping_PackingListApp.Tests
 /workspaces/CS690FinalProject/PackingListApp.Tests/bin/Debug/net10.0/CoverletSourceRootsMapping_PackingListApp.Tests
 /workspaces/CS690FinalProject/PackingListApp.Tests/bin/Debug/net10.0/xunit.abstractions.dll
