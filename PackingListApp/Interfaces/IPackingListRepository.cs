@@ -1,3 +1,5 @@
+using PackingListApp.Domain;
+
 namespace PackingListApp.Interfaces;
 
 public interface IPackingListRepository
@@ -7,5 +9,5 @@ public interface IPackingListRepository
     void RenameList(string oldName, string newName);
     void DeleteList(string name);
     List<string> ListAll();
-    
+
 }

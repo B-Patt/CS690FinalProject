@@ -1,6 +1,6 @@
-namespace PackingListApp.Infrastructure;
-
 using PackingListApp.Interfaces;
+
+namespace PackingListApp.Infrastructure;
 
 public class TextFileStorage : IStorage
 {

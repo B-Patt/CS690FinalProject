@@ -1,8 +1,8 @@
-﻿namespace PackingListApp.UI;
-
-using Spectre.Console;
+﻿using Spectre.Console;
 using PackingListApp.Interfaces;
 using PackingListApp.Domain;
+
+namespace PackingListApp.UI;
 
 public class ConsoleUI
 {
@@ -13,32 +13,45 @@ public class ConsoleUI
         this.manager = manager;
     }
 
-    public void Show()
+    public void Run()
     {
-        string choice;
-
-        do
+        while (true)
         {
-            choice = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                .Title("Packing List Main Menu")
-                .AddChoices(
-                    "Create New Packing List",
-                    "Load Existing Packing List",
-                    "Manage Saved Packing Lists",
-                    "Exit"));
+            var choice = ShowMainMenu();
 
-            if (choice == "Create New Packing List")
-                CreateNewPackingList();
+            switch (choice)
+            {
+                case "Create New List":
+                    CreateNewPackingList();
+                    break;
 
-            else if (choice == "Load Existing Packing List")
-                LoadExistingPackingList();
+                case "Load Existing List":
+                    LoadExistingPackingList();
+                    break;
 
-            else if (choice == "Manage Saved Packing Lists")
-                ShowSavedListsMenu();
+                case "Manage Saved List Files":
+                    ShowSavedListsMenu();
+                    break;
 
-        } while (choice != "Exit");
+                case "Save & Exit Program":
+                    return;
+            }
+        }
     }
+
+    public string ShowMainMenu()
+{
+    return AnsiConsole.Prompt(
+        new SelectionPrompt<string>()
+            .Title("PACKING LIST MAIN MENU")
+            .AddChoices(
+                "Create New List",
+                "Load Existing List",
+                "Manage Saved List Files",
+                "Save & Exit Program"
+            ));
+}
+
 
     private void CreateNewPackingList()
     {
@@ -327,12 +340,20 @@ public class ConsoleUI
     {
         string newName = AnsiConsole.Ask<string>("Enter new list name:");
 
-        manager.RenameList(oldName, newName);
-
-        AnsiConsole.WriteLine("List renamed.");
-
-        return newName;
+        try
+        {
+            manager.RenameList(oldName, newName);
+            AnsiConsole.WriteLine("List renamed.");
+            return newName;
+        }
+        catch (InvalidOperationException ex)
+        {
+            AnsiConsole.MarkupLine($"[red]{ex.Message}[/]");
+            return oldName; // keep the old name
+        }
     }
+
+
 
     private void DeleteListFlow(string listName)
     {

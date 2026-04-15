@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace PackingListApp.Interfaces;
 
 public interface IStorage
