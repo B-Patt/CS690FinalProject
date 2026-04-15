@@ -1,4 +1,4 @@
-namespace PackingListApp;
+namespace PackingListApp.Domain;
 
 public static class Validator
 {
