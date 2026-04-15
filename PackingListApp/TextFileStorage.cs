@@ -1,8 +1,10 @@
-namespace PackingListApp;
+namespace PackingListApp.Infrastructure;
 
-public class TextFileStorage
+using PackingListApp.Interfaces;
+
+public class TextFileStorage : IStorage
 {
-    private string directoryPath;
+    private readonly string directoryPath;
 
     public TextFileStorage(string directoryPath)
     {
@@ -14,7 +16,7 @@ public class TextFileStorage
         }
     }
 
-    public string ReadFile(string name) 
+    public string ReadFile(string name)
     {
         string fullPath = Path.Combine(directoryPath, name);
 
@@ -34,11 +36,13 @@ public class TextFileStorage
 
     public void RenameFile(string oldName, string newName)
     {
-        string oldPath = Path.Combine(directoryPath, oldName + ".txt");
-        string newPath = Path.Combine(directoryPath, newName + ".txt");
+        string oldPath = Path.Combine(directoryPath, oldName);
+        string newPath = Path.Combine(directoryPath, newName);
 
         if (File.Exists(oldPath))
+        {
             File.Move(oldPath, newPath);
+        }
     }
 
     public void DeleteFile(string name)
@@ -52,12 +56,12 @@ public class TextFileStorage
     }
 
     public bool FileExists(string name)
-   {
+    {
         string fullPath = Path.Combine(directoryPath, name);
         return File.Exists(fullPath);
     }
 
-    public List<string> ListFiles() 
+    public List<string> ListFiles()
     {
         List<string> files = new List<string>();
 
@@ -70,5 +74,4 @@ public class TextFileStorage
 
         return files;
     }
-
 }
