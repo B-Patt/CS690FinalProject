@@ -1,6 +1,10 @@
-namespace PackingListApp;
+namespace PackingListApp.Application;
 
-public class PackingListManager
+using PackingListApp.Interfaces;
+using PackingListApp.Domain;
+
+public class PackingListManager : IPackingListManager
+
 {
     private readonly TextFileStorage storage;
     private readonly PackingListRepository repo;
