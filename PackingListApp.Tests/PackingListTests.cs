@@ -1,3 +1,5 @@
+using PackingListApp.Domain;
+
 namespace PackingListApp.Tests;
 
 public class PackingListTests

@@ -1,49 +1,39 @@
+using PackingListApp.Application;
+using PackingListApp.Infrastructure;
+using PackingListApp.Interfaces;
+
 namespace PackingListApp.Tests;
 
 public class PackingListManagerTests
 {
-    private readonly string testDir;
     private PackingListManager manager;
+    private IPackingListRepository repo;
 
     public PackingListManagerTests()
     {
-        // Temporary Directory for testing
-        testDir = Path.Combine(Path.GetTempPath(), "PackingListAppTests_Manager");
-
-    if (Directory.Exists(testDir))
-        Directory.Delete(testDir, true);
-
-    Directory.CreateDirectory(testDir);
-
-    var storage = new TextFileStorage(testDir);
-    var repo = new PackingListRepository(storage);
-
-    manager = new PackingListManager();
-
-    typeof(PackingListManager)
-        .GetField("repo", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-        .SetValue(manager, repo);
+        repo = new PackingListRepository(new TextFileStorage("TestLists"));
+        manager = new PackingListManager(repo);
     }
 
     [Fact]
-    public void Test_CreateNewList()
+    public void Test_CreateList()
     {
-        var list = manager.CreateNewList("Trip");
+        var list = manager.CreateList("Trip");
         Assert.NotNull(list);
         Assert.Equal("Trip", list.Name);
     }
 
     [Fact]
-    public void Test_CreateNewList_Invalid()
+    public void Test_Create_Invalid()
     {
-        var list = manager.CreateNewList("");
+        var list = manager.CreateList("");
         Assert.Null(list);
     }
 
     [Fact]
     public void Test_LoadList()
     {
-        manager.CreateNewList("LoadMe");
+        manager.CreateList("LoadMe");
         var loaded = manager.LoadList("LoadMe");
 
         Assert.NotNull(loaded);
@@ -53,7 +43,7 @@ public class PackingListManagerTests
     [Fact]
     public void Test_DeleteList()
     {
-        manager.CreateNewList("Gone");
+        manager.CreateList("Gone");
         manager.DeleteList("Gone");
 
         Assert.Null(manager.LoadList("Gone"));
