@@ -1,3 +1,6 @@
+using PackingListApp.Domain;
+using PackingListApp.Infrastructure;
+
 namespace PackingListApp.Tests;
 
 public class PackingListRepositoryTests
