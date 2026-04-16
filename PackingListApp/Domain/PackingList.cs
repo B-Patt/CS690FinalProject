@@ -69,4 +69,10 @@ public class PackingList
             item.MarkUnpacked();
     }
 
+    public void ResetQuantitiesToDefault(int defaultQty = 1)
+    {
+        foreach (var item in Items)
+            item.ResetQuantity(defaultQty);
+    }
+
 }

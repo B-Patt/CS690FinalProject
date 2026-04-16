@@ -87,4 +87,12 @@ public class PackingListManager : IPackingListManager
         list.ClearPackedStatus();
         repository.SaveList(list);
     }
+
+    public void ResetQuantities(string listName)
+    {
+        var list = LoadList(listName);
+        list.ResetQuantitiesToDefault();
+        SaveList(list);
+    }
+
 }

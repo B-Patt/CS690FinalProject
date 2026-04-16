@@ -27,6 +27,11 @@ public class PackingItem
     {
         IsPacked = false;
     }
-    
+
+    public void ResetQuantity(int defaultQty = 1)
+    {
+    Quantity = defaultQty;
+    }
+
 }
 

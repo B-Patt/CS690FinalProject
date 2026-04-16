@@ -300,11 +300,11 @@ public class ConsoleUI
                 new SelectionPrompt<string>()
                     .Title($"Manage \"{listName}\"")
                     .AddChoices(
-                        "Load (View) List",
+                        "View List",
                         "Rename List",
                         "Delete List",
                         "Clear All Items to Unpacked",
- //                       "Reset Quantity Default (1)",
+                        "Reset Quantity Default (1)",
                         "Back",
                         "Save & Exit Program"));
 
@@ -335,12 +335,12 @@ public class ConsoleUI
                 manager.ClearPackedStatus(listName);
                 AnsiConsole.MarkupLine("All items marked as unpacked.  View List to see all items.");
             }
- /*           else if (choice == "Reset Quantity Default (1)")
-            /
+            else if (choice == "Reset Quantity Default (1)")
+            {
                 manager.ResetQuantities(listName);
                 AnsiConsole.MarkupLine("All item quantities reset to default (1).");
             }
- */           else if (choice == "Save & Exit Program")
+            else if (choice == "Save & Exit Program")
             {
                 Environment.Exit(0);
             }
