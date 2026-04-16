@@ -38,5 +38,4 @@ public static class Validator
         return true;
     }
 
-
 }

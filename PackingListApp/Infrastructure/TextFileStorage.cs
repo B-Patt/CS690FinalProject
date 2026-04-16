@@ -1,77 +1,77 @@
 using PackingListApp.Interfaces;
 
-namespace PackingListApp.Infrastructure;
-
-public class TextFileStorage : IStorage
+namespace PackingListApp.Infrastructure
 {
-    private readonly string directoryPath;
-
-    public TextFileStorage(string directoryPath)
+    public class TextFileStorage : IStorage
     {
-        this.directoryPath = directoryPath;
+        private readonly string directoryPath;
 
-        if (!Directory.Exists(directoryPath))
+        public TextFileStorage(string directoryPath)
         {
-            Directory.CreateDirectory(directoryPath);
-        }
-    }
+            this.directoryPath = directoryPath;
 
-    public string ReadFile(string name)
-    {
-        string fullPath = Path.Combine(directoryPath, name);
-
-        if (!File.Exists(fullPath))
-        {
-            return "";
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
         }
 
-        return File.ReadAllText(fullPath);
-    }
-
-    public void WriteFile(string name, string contents)
-    {
-        string fullPath = Path.Combine(directoryPath, name);
-        File.WriteAllText(fullPath, contents);
-    }
-
-    public void RenameFile(string oldName, string newName)
-    {
-        string oldPath = Path.Combine(directoryPath, oldName);
-        string newPath = Path.Combine(directoryPath, newName);
-
-        if (File.Exists(oldPath))
+        private string GetFullPath(string name)
         {
+            // Always ensure .txt extension
+            if (!name.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+                name += ".txt";
+
+            return Path.Combine(directoryPath, name);
+        }
+
+        public string ReadFile(string name)
+        {
+            string fullPath = GetFullPath(name);
+
+            if (!File.Exists(fullPath))
+                return "";
+
+            return File.ReadAllText(fullPath);
+        }
+
+        public void WriteFile(string name, string contents)
+        {
+            string fullPath = GetFullPath(name);
+            File.WriteAllText(fullPath, contents);
+        }
+
+        public bool RenameFile(string oldName, string newName)
+        {
+            string oldPath = GetFullPath(oldName);
+            string newPath = GetFullPath(newName);
+
+            if (!File.Exists(oldPath))
+                return false;
+
             File.Move(oldPath, newPath);
+            return true;
         }
-    }
 
-    public void DeleteFile(string name)
-    {
-        string fullPath = Path.Combine(directoryPath, name);
-
-        if (File.Exists(fullPath))
+        public void DeleteFile(string name)
         {
-            File.Delete(fullPath);
+            string fullPath = GetFullPath(name);
+
+            if (File.Exists(fullPath))
+                File.Delete(fullPath);
         }
-    }
 
-    public bool FileExists(string name)
-    {
-        string fullPath = Path.Combine(directoryPath, name);
-        return File.Exists(fullPath);
-    }
-
-    public List<string> ListFiles()
-    {
-        List<string> files = new List<string>();
-
-        string[] filePaths = Directory.GetFiles(directoryPath);
-
-        foreach (string path in filePaths)
+        public bool FileExists(string name)
         {
-            files.Add(Path.GetFileName(path));
+            string fullPath = GetFullPath(name);
+            return File.Exists(fullPath);
         }
 
-        return files;
+        public List<string> ListFiles()
+        {
+            return Directory.GetFiles(directoryPath, "*.txt")
+                .Select(Path.GetFileNameWithoutExtension)
+                .ToList();
+        }
     }
 }

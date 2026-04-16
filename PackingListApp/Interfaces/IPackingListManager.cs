@@ -17,4 +17,7 @@ public interface IPackingListManager
    void ClearPackedStatus(string listName);
    void ResetQuantities(string listName);
    void ResetAll(string listName);
+   IEnumerable<PackingItem> SortByQuantity(string listName, bool descending = true);
+   IEnumerable<PackingItem> SortByPackedStatus(string listName, bool packedFirst = false);
+   IEnumerable<PackingItem> SortAlphabetically(string listName);
 }

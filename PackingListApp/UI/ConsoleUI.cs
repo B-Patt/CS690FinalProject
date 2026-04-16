@@ -40,18 +40,17 @@ public class ConsoleUI
     }
 
     public string ShowMainMenu()
-{
-    return AnsiConsole.Prompt(
-        new SelectionPrompt<string>()
-            .Title("PACKING LIST MAIN MENU")
-            .AddChoices(
-                "Create New List",
-                "Load Existing List",
-                "Manage Saved List Files",
-                "Save & Exit Program"
-            ));
-}
-
+    {
+        return AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("PACKING LIST MAIN MENU")
+                .AddChoices(
+                    "Create New List",
+                    "Load Existing List",
+                    "Manage Saved List Files",
+                    "Save & Exit Program"
+                ));
+    }
 
     private void CreateNewPackingList()
     {
@@ -144,6 +143,7 @@ public class ConsoleUI
                         "Edit Item Quantity",
                         "Remove Item",
                         "Packed Status",
+                        "Sort Items",
                         "Back",
                         "Save & Exit Program"));
 
@@ -158,6 +158,9 @@ public class ConsoleUI
 
             else if (choice == "Packed Status")
                 TogglePackedStatus(list);
+
+            else if (choice == "Sort Items")
+                ShowSortingMenu(list.Name);
 
             else if (choice == "Save & Exit Program")
             {
@@ -336,7 +339,7 @@ public class ConsoleUI
 
                 AnsiConsole.MarkupLine("List renamed successfully!");
 
-                listName = newName; 
+                listName = newName;
             }
             else if (choice == "Delete List")
             {
@@ -346,17 +349,17 @@ public class ConsoleUI
             else if (choice == "Reset Items to Default (Unpacked)")
             {
                 manager.ClearPackedStatus(listName);
-                AnsiConsole.MarkupLine("All items marked as unpacked.  View List to see all items.");
+                AnsiConsole.MarkupLine("All items marked as unpacked.");
             }
             else if (choice == "Reset Quantity Default (1)")
             {
                 manager.ResetQuantities(listName);
-                AnsiConsole.MarkupLine("All item quantities reset to default (1).");
+                AnsiConsole.MarkupLine("All item quantities reset to 1.");
             }
             else if (choice == "Reset All (Unpacked + Quantity Default)")
             {
                 manager.ResetAll(listName);
-                AnsiConsole.MarkupLine("All items reset: unpacked + quantity set to 1.");
+                AnsiConsole.MarkupLine("All items reset.");
             }
             else if (choice == "Save & Exit Program")
             {
@@ -365,25 +368,6 @@ public class ConsoleUI
 
         } while (choice != "Back");
     }
-
-    private string RenameListFlow(string oldName)
-    {
-        string newName = AnsiConsole.Ask<string>("Enter new list name:");
-
-        try
-        {
-            manager.RenameList(oldName, newName);
-            AnsiConsole.WriteLine("List renamed.");
-            return newName;
-        }
-        catch (InvalidOperationException ex)
-        {
-            AnsiConsole.MarkupLine($"[red]{ex.Message}[/]");
-            return oldName; // keep the old name
-        }
-    }
-
-
 
     private void DeleteListFlow(string listName)
     {
@@ -396,5 +380,48 @@ public class ConsoleUI
             manager.DeleteList(listName);
 
         AnsiConsole.WriteLine("List deleted.");
+    }
+
+    private void ShowSortingMenu(string listName)
+    {
+        var choice = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title($"Sorting Options for {listName}")
+                .AddChoices(
+                    "Quantity (High to Low)",
+                    "Quantity (Low to High)",
+                    "Packed Status (Not Packed First)",
+                    "Packed Status (Packed First)",
+                    "Alphabetical (A to Z)",
+                    "Back"));
+
+        switch (choice)
+        {
+            case "Quantity (High to Low)":
+                manager.SortByQuantity(listName, true);
+                break;
+
+            case "Quantity (Low to High)":
+                manager.SortByQuantity(listName, false);
+                break;
+
+            case "Packed Status (Not Packed First)":
+                manager.SortByPackedStatus(listName, true);
+                break;
+
+            case "Packed Status (Packed First)":
+                manager.SortByPackedStatus(listName, false);
+                break;
+
+            case "Alphabetical (A to Z)":
+                manager.SortAlphabetically(listName);
+                break;
+
+            case "Back":
+                return;
+        }
+
+        var updated = manager.LoadList(listName);
+        ShowListContents(updated);
     }
 }
