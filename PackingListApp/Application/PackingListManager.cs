@@ -32,7 +32,7 @@ public class PackingListManager : IPackingListManager
         repository.SaveList(list);
     }
 
-    public void RenameList(string oldName, string newName)
+ public void RenameList(string oldName, string newName)
     {
         // Renaming List to duplicate list name error
         if (repository.ListAll().Contains(newName))
