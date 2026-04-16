@@ -120,3 +120,5 @@ PackingListApp/.gitignore
 PackingListApp.Tests/obj/Debug/net10.0/PackingListApp.Tests.AssemblyInfo.cs
 PackingListApp.Tests/obj/Debug/net10.0/PackingListApp.Tests.AssemblyInfoInputs.cache
 PackingListApp.Tests/obj/Debug/net10.0/PackingListApp.Tests.csproj.AssemblyReference.cache
+bin/
+obj/
