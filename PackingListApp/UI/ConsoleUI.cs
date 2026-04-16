@@ -303,10 +303,12 @@ public class ConsoleUI
                         "Load (View) List",
                         "Rename List",
                         "Delete List",
+                        "Clear All Items to Unpacked",
+ //                       "Reset Quantity Default (1)",
                         "Back",
                         "Save & Exit Program"));
 
-            if (choice == "Load (View) List")
+            if (choice == "View List")
             {
                 var list = manager.LoadList(listName);
 
@@ -328,7 +330,17 @@ public class ConsoleUI
                 DeleteListFlow(listName);
                 return;
             }
-            else if (choice == "Save & Exit Program")
+            else if (choice == "Clear All Items to Unpacked")
+            {
+                manager.ClearPackedStatus(listName);
+                AnsiConsole.MarkupLine("All items marked as unpacked.  View List to see all items.");
+            }
+ /*           else if (choice == "Reset Quantity Default (1)")
+            /
+                manager.ResetQuantities(listName);
+                AnsiConsole.MarkupLine("All item quantities reset to default (1).");
+            }
+ */           else if (choice == "Save & Exit Program")
             {
                 Environment.Exit(0);
             }

@@ -22,5 +22,11 @@ public class PackingItem
     {
         IsPacked = value;
     }
+
+    public void MarkUnpacked()
+    {
+        IsPacked = false;
+    }
+    
 }
 

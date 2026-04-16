@@ -80,4 +80,11 @@ public class PackingListManager : IPackingListManager
     {
         return repository.ListAll();
     }
+
+    public void ClearPackedStatus(string listName)
+    {
+        var list = LoadList(listName);
+        list.ClearPackedStatus();
+        repository.SaveList(list);
+    }
 }

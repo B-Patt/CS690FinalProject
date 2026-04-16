@@ -36,30 +36,37 @@ public class PackingList
     }
 
     public override string ToString()
-{
-    List<string> lines = new();
-    lines.Add(Name);
-
-    foreach (var item in Items)
-        lines.Add($"{item.Name},{item.Quantity},{item.IsPacked}");
-
-    return string.Join(Environment.NewLine, lines);
-}
-
-public static PackingList FromString(string contents)
-{
-    var lines = contents.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-    var list = new PackingList(lines[0].Trim());
-
-    for (int i = 1; i < lines.Length; i++)
     {
-        var parts = lines[i].Split(',');
-        var item = new PackingItem(parts[0], int.Parse(parts[1]));
-        item.SetPacked(bool.Parse(parts[2]));
-        list.AddItem(item);
+        List<string> lines = new();
+        lines.Add(Name);
+
+        foreach (var item in Items)
+            lines.Add($"{item.Name},{item.Quantity},{item.IsPacked}");
+
+        return string.Join(Environment.NewLine, lines);
     }
 
-    return list;
-}
+    public static PackingList FromString(string contents)
+    {
+        var lines = contents.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        var list = new PackingList(lines[0].Trim());
+
+        for (int i = 1; i < lines.Length; i++)
+        {
+            var parts = lines[i].Split(',');
+            var item = new PackingItem(parts[0], int.Parse(parts[1]));
+            item.SetPacked(bool.Parse(parts[2]));
+            list.AddItem(item);
+        }
+
+        return list;
+    }
+
+
+    public void ClearPackedStatus()
+    {
+        foreach (var item in Items)
+            item.MarkUnpacked();
+    }
 
 }
