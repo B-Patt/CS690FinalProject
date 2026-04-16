@@ -78,8 +78,7 @@ public class PackingListManager : IPackingListManager
     public void TogglePacked(string listName, string itemName)
     {
         var list = repository.LoadList(listName);
-        var item = list.FindItem(itemName);
-        item.SetPacked(!item.IsPacked);
+        list.TogglePacked(itemName);
         repository.SaveList(list);
     }
 
@@ -109,4 +108,30 @@ public class PackingListManager : IPackingListManager
         SaveList(list);
     }
 
+    public IEnumerable<PackingItem> SortByQuantity(string listName, bool descending = true)
+    {
+    var list = repository.LoadList(listName);
+    var sorted = list.GetItemsSortedByQuantity(descending);
+    list.ApplySort(sorted);
+    repository.SaveList(list);
+    return sorted;
+    }
+
+    public IEnumerable<PackingItem> SortByPackedStatus(string listName, bool packedFirst = false)
+    {
+    var list = repository.LoadList(listName);
+    var sorted = list.GetItemsSortedByPackedStatus(packedFirst);
+    list.ApplySort(sorted);
+    repository.SaveList(list);
+    return sorted;
+    }
+
+    public IEnumerable<PackingItem> SortAlphabetically(string listName)
+    {
+        var list = repository.LoadList(listName);
+        var sorted = list.GetItemsSortedAlphabetically();
+        list.ApplySort(sorted);
+        repository.SaveList(list);
+        return sorted;
+    }
 }

@@ -6,8 +6,7 @@ public interface IStorage
 {
     string ReadFile(string name);
     void WriteFile(string name, string contents);
-    void RenameFile(string oldName, string newName);
     void DeleteFile(string name);
-    bool FileExists(string name);
+    bool RenameFile(string oldName, string newName);
     List<string> ListFiles();
 }
