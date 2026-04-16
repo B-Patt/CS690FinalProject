@@ -30,11 +30,27 @@ public class PackingListRepository : IPackingListRepository
         storage.WriteFile(fileName, contents);
     }
 
-    public void RenameList(string oldName, string newName)
+public bool RenameList(string oldName, string newName)
     {
         string oldFile = oldName + ".txt";
         string newFile = newName + ".txt";
+
+        
+        if (storage.FileExists(newFile))
+            return false;
+
+    
         storage.RenameFile(oldFile, newFile);
+
+        
+        var list = LoadList(newName);
+        if (list == null)
+            return false;
+
+        list.Rename(newName);
+        SaveList(list);
+
+        return true;
     }
 
     public void DeleteList(string name)
@@ -50,5 +66,7 @@ public class PackingListRepository : IPackingListRepository
                       .Select(f => f.Replace(".txt", ""))
                       .ToList();
     }
+
+    
 }
 
