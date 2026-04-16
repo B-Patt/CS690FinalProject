@@ -17,6 +17,9 @@ public class PackingList
 
     public void AddItem(PackingItem item)
     {
+        if (Items.Any(i => i.Name.Equals(item.Name, StringComparison.OrdinalIgnoreCase)))
+        throw new InvalidOperationException("Duplicate item name.");
+
         Items.Add(item);
     }
 

@@ -1,3 +1,7 @@
+using PackingListApp.Application;
+using PackingListApp.Infrastructure;
+using PackingListApp.Domain;
+
 namespace PackingListApp.Tests;
 
 public class PackingListManagerTests
@@ -18,32 +22,28 @@ public class PackingListManagerTests
     var storage = new TextFileStorage(testDir);
     var repo = new PackingListRepository(storage);
 
-    manager = new PackingListManager();
-
-    typeof(PackingListManager)
-        .GetField("repo", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-        .SetValue(manager, repo);
+    manager = new PackingListManager(repo);
     }
 
     [Fact]
-    public void Test_CreateNewList()
+    public void Test_CreateList()
     {
-        var list = manager.CreateNewList("Trip");
+        var list = manager.CreateList("Trip");
         Assert.NotNull(list);
         Assert.Equal("Trip", list.Name);
     }
 
     [Fact]
-    public void Test_CreateNewList_Invalid()
+    public void Test_CreateList_Invalid()
     {
-        var list = manager.CreateNewList("");
+        var list = manager.CreateList("");
         Assert.Null(list);
     }
 
     [Fact]
     public void Test_LoadList()
     {
-        manager.CreateNewList("LoadMe");
+        manager.CreateList("LoadMe");
         var loaded = manager.LoadList("LoadMe");
 
         Assert.NotNull(loaded);
@@ -53,9 +53,28 @@ public class PackingListManagerTests
     [Fact]
     public void Test_DeleteList()
     {
-        manager.CreateNewList("Gone");
+        manager.CreateList("Gone");
         manager.DeleteList("Gone");
 
         Assert.Null(manager.LoadList("Gone"));
     }
+
+    [Fact]
+    public void RenameList_Should_Rename_List_When_NewName_Is_Unique()
+    {
+
+        var storage = new TextFileStorage(testDir);
+        var repo = new PackingListRepository(storage);
+        var manager = new PackingListManager(repo);
+
+        var list = new PackingList("Trip");
+        repo.SaveList(list);
+
+        bool result = manager.RenameList("Trip", "Vacation");
+
+        Assert.True(result);
+        Assert.True(File.Exists(Path.Combine(testDir, "Vacation.txt")));
+        Assert.False(File.Exists(Path.Combine(testDir, "Trip.txt")));
+    }
+
 }

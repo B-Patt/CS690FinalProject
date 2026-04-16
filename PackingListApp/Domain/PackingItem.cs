@@ -5,7 +5,7 @@ public class PackingItem
     public string Name { get; }
     public int Quantity { get; private set; }
     public bool IsPacked { get; private set; }
-
+    
     public PackingItem(string name, int quantity)
     {
         Name = name;
@@ -26,6 +26,11 @@ public class PackingItem
     public void MarkUnpacked()
     {
         IsPacked = false;
+    }
+
+    public void MarkPacked()
+    {
+        IsPacked = true;
     }
 
     public void ResetQuantity(int defaultQty = 1)

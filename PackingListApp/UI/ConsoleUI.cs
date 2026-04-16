@@ -324,7 +324,19 @@ public class ConsoleUI
             }
             else if (choice == "Rename List")
             {
-                listName = RenameListFlow(listName);
+                var newName = AnsiConsole.Ask<string>("Enter new name:");
+
+                bool success = manager.RenameList(listName, newName);
+
+                if (!success)
+                {
+                    AnsiConsole.MarkupLine("Rename failed: name already exists or list not found.");
+                    return;
+                }
+
+                AnsiConsole.MarkupLine("List renamed successfully!");
+
+                listName = newName; 
             }
             else if (choice == "Delete List")
             {
