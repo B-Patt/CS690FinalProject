@@ -1,6 +1,8 @@
 using PackingListApp.Application;
 using PackingListApp.Infrastructure;
 using PackingListApp.Interfaces;
+using PackingListApp.Domain;
+
 
 namespace PackingListApp.Tests;
 
@@ -13,6 +15,7 @@ public class PackingListManagerTests
     {
         repo = new PackingListRepository(new TextFileStorage("TestLists"));
         manager = new PackingListManager(repo);
+>>>>>>> origin/main
     }
 
     [Fact]
@@ -24,7 +27,9 @@ public class PackingListManagerTests
     }
 
     [Fact]
+
     public void Test_Create_Invalid()
+>>>>>>> origin/main
     {
         var list = manager.CreateList("");
         Assert.Null(list);
