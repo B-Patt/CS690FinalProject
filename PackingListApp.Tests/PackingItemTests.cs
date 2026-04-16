@@ -52,4 +52,15 @@ public class PackingItemTests
         Assert.Equal(3, newItem.Quantity);
         Assert.False(newItem.IsPacked);
     }
+
+    [Fact]
+public void Rename_UpdatesListName()
+{
+    var list = new PackingList("OldName");
+
+    list.Rename("NewName");
+
+    Assert.Equal("NewName", list.Name);
+}
+
 }
