@@ -13,9 +13,9 @@ namespace PackingListApp.Domain
             IsPacked = false;
         }
 
-        public void MarkPacked()
+        public void SetPacked(bool value)
         {
-            IsPacked = true;
+            IsPacked = value;
         }
 
         public void MarkUnpacked()
@@ -23,9 +23,14 @@ namespace PackingListApp.Domain
             IsPacked = false;
         }
 
-        public void SetPacked(bool value)
+        public void MarkPacked()
         {
-            IsPacked = value;
+            IsPacked = true;
+        }
+
+        public void ResetQuantity(int defaultQty = 1)
+        {
+            Quantity = defaultQty;
         }
 
         public void SetQuantity(int qty)

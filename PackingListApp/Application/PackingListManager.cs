@@ -32,14 +32,21 @@ public class PackingListManager : IPackingListManager
         repository.SaveList(list);
     }
 
- public void RenameList(string oldName, string newName)
+    public bool RenameList(string oldName, string newName)
     {
-        // Renaming List to duplicate list name error
-        if (repository.ListAll().Contains(newName))
-        throw new InvalidOperationException("A list with that name already exists.");
+        var list = repository.LoadList(oldName);
+        if (list == null)
+            return false;
 
+        var allLists = repository.ListAll();
+        if (allLists.Any(n => n.Equals(newName, StringComparison.OrdinalIgnoreCase)))
+            return false;
+
+        list.Rename(newName);
         repository.RenameList(oldName, newName);
+        repository.SaveList(list);
 
+        return true;
     }
 
     public void DeleteList(string name)
@@ -80,4 +87,26 @@ public class PackingListManager : IPackingListManager
     {
         return repository.ListAll();
     }
+
+    public void ClearPackedStatus(string listName)
+    {
+        var list = LoadList(listName);
+        list.ClearPackedStatus();
+        repository.SaveList(list);
+    }
+
+    public void ResetQuantities(string listName)
+    {
+        var list = LoadList(listName);
+        list.ResetQuantitiesToDefault();
+        SaveList(list);
+    }
+
+    public void ResetAll(string listName)
+    {
+        var list = LoadList(listName);
+        list.ResetAll();
+        SaveList(list);
+    }
+
 }

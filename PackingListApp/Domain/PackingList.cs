@@ -2,35 +2,12 @@ namespace PackingListApp.Domain
 {
     public class PackingList
     {
-        private List<PackingItem> items;
-
         public string Name { get; private set; }
-        public IReadOnlyList<PackingItem> Items => items;
+        public List<PackingItem> Items { get; } = new();
 
         public PackingList(string name)
         {
             Name = name;
-            items = new List<PackingItem>();
-        }
-
-        public void AddItem(PackingItem item)
-        {
-            items.Add(item);
-        }
-
-        public bool RemoveItem(string itemName)
-        {
-            var item = FindItem(itemName);
-            if (item == null)
-                return false;
-
-            items.Remove(item);
-            return true;
-        }
-
-        public PackingItem FindItem(string itemName)
-        {
-            return items.FirstOrDefault(i => i.Name == itemName);
         }
 
         public void Rename(string newName)
@@ -38,6 +15,28 @@ namespace PackingListApp.Domain
             Name = newName;
         }
 
+        public void AddItem(PackingItem item)
+        {
+            if (Items.Any(i => i.Name.Equals(item.Name, StringComparison.OrdinalIgnoreCase)))
+                throw new InvalidOperationException("Duplicate item name.");
+
+            Items.Add(item);
+        }
+
+        public bool RemoveItem(string itemName)
+        {
+            var item = Items.FirstOrDefault(i => i.Name == itemName);
+            if (item == null)
+                return false;
+
+            Items.Remove(item);
+            return true;
+        }
+
+        public PackingItem FindItem(string itemName)
+        {
+            return Items.FirstOrDefault(i => i.Name == itemName);
+        }
 
         public override string ToString()
         {
@@ -66,5 +65,25 @@ namespace PackingListApp.Domain
             return list;
         }
 
+        public void ClearPackedStatus()
+        {
+            foreach (var item in Items)
+                item.MarkUnpacked();
+        }
+
+        public void ResetQuantitiesToDefault(int defaultQty = 1)
+        {
+            foreach (var item in Items)
+                item.ResetQuantity(defaultQty);
+        }
+
+        public void ResetAll()
+        {
+            foreach (var item in Items)
+            {
+                item.MarkUnpacked();
+                item.ResetQuantity();
+            }
+        }
     }
 }

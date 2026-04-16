@@ -3,19 +3,27 @@ using PackingListApp.Infrastructure;
 using PackingListApp.Interfaces;
 using PackingListApp.Domain;
 
-
 namespace PackingListApp.Tests;
 
 public class PackingListManagerTests
 {
     private PackingListManager manager;
     private IPackingListRepository repo;
+    private string testDir;
 
     public PackingListManagerTests()
     {
-        repo = new PackingListRepository(new TextFileStorage("TestLists"));
+        // Temporary Directory for testing
+        testDir = Path.Combine(Path.GetTempPath(), "PackingListAppTests_Manager");
+
+        if (Directory.Exists(testDir))
+            Directory.Delete(testDir, true);
+
+        Directory.CreateDirectory(testDir);
+
+        var storage = new TextFileStorage(testDir);
+        repo = new PackingListRepository(storage);
         manager = new PackingListManager(repo);
->>>>>>> origin/main
     }
 
     [Fact]
@@ -27,9 +35,7 @@ public class PackingListManagerTests
     }
 
     [Fact]
-
-    public void Test_Create_Invalid()
->>>>>>> origin/main
+    public void Test_CreateList_Invalid()
     {
         var list = manager.CreateList("");
         Assert.Null(list);
@@ -52,5 +58,22 @@ public class PackingListManagerTests
         manager.DeleteList("Gone");
 
         Assert.Null(manager.LoadList("Gone"));
+    }
+
+    [Fact]
+    public void RenameList_Should_Rename_List_When_NewName_Is_Unique()
+    {
+        var storage = new TextFileStorage(testDir);
+        var repo = new PackingListRepository(storage);
+        var manager = new PackingListManager(repo);
+
+        var list = new PackingList("Trip");
+        repo.SaveList(list);
+
+        bool result = manager.RenameList("Trip", "Vacation");
+
+        Assert.True(result);
+        Assert.True(File.Exists(Path.Combine(testDir, "Vacation.txt")));
+        Assert.False(File.Exists(Path.Combine(testDir, "Trip.txt")));
     }
 }

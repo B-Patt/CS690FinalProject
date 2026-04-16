@@ -300,13 +300,16 @@ public class ConsoleUI
                 new SelectionPrompt<string>()
                     .Title($"Manage \"{listName}\"")
                     .AddChoices(
-                        "Load (View) List",
+                        "View List",
                         "Rename List",
                         "Delete List",
+                        "Reset Items to Default (Unpacked)",
+                        "Reset Quantity Default (1)",
+                        "Reset All (Unpacked + Quantity Default)",
                         "Back",
                         "Save & Exit Program"));
 
-            if (choice == "Load (View) List")
+            if (choice == "View List")
             {
                 var list = manager.LoadList(listName);
 
@@ -321,12 +324,39 @@ public class ConsoleUI
             }
             else if (choice == "Rename List")
             {
-                listName = RenameListFlow(listName);
+                var newName = AnsiConsole.Ask<string>("Enter new name:");
+
+                bool success = manager.RenameList(listName, newName);
+
+                if (!success)
+                {
+                    AnsiConsole.MarkupLine("Rename failed: name already exists or list not found.");
+                    return;
+                }
+
+                AnsiConsole.MarkupLine("List renamed successfully!");
+
+                listName = newName; 
             }
             else if (choice == "Delete List")
             {
                 DeleteListFlow(listName);
                 return;
+            }
+            else if (choice == "Reset Items to Default (Unpacked)")
+            {
+                manager.ClearPackedStatus(listName);
+                AnsiConsole.MarkupLine("All items marked as unpacked.  View List to see all items.");
+            }
+            else if (choice == "Reset Quantity Default (1)")
+            {
+                manager.ResetQuantities(listName);
+                AnsiConsole.MarkupLine("All item quantities reset to default (1).");
+            }
+            else if (choice == "Reset All (Unpacked + Quantity Default)")
+            {
+                manager.ResetAll(listName);
+                AnsiConsole.MarkupLine("All items reset: unpacked + quantity set to 1.");
             }
             else if (choice == "Save & Exit Program")
             {
