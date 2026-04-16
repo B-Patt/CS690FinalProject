@@ -1,3 +1,5 @@
+using PackingListApp.Infrastructure;
+
 namespace PackingListApp.Tests;
 
 public class TextFileStorageTests

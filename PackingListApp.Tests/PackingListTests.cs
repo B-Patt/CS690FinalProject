@@ -1,3 +1,5 @@
+using PackingListApp.Domain;
+
 namespace PackingListApp.Tests;
 
 public class PackingListTests
@@ -10,14 +12,15 @@ public class PackingListTests
     }
 
     [Fact]
-    public void Test_AddItem()
+    public void AddItem_AddsItemToList()
     {
-        var item = new PackingItem("Pants", 2);
-        list.AddItem(item);
+    var list = new PackingList("Trip");
+    var item = new PackingItem("Pants", 2);
 
-        Assert.Single(list.Items);
-        Assert.Equal("Pants", list.Items[0].Name);
-    }
+    list.AddItem(item);
+
+    Assert.Contains(item, list.Items);
+}
 
     [Fact]
     public void Test_RemoveItem_Found()
@@ -36,6 +39,16 @@ public class PackingListTests
     {
         bool removed = list.RemoveItem("Missing");
         Assert.False(removed);
+    }
+
+    [Fact]
+    public void RemoveItem_ReturnsFalse_WhenItemNotFound()
+    {
+        var list = new PackingList("Trip");
+
+        var result = list.RemoveItem("Nonexistent");
+
+        Assert.False(result);
     }
 
     [Fact]
