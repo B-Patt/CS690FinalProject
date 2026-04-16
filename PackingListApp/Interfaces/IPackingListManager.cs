@@ -16,4 +16,5 @@ public interface IPackingListManager
    void TogglePacked(string listName, string itemName);
    void ClearPackedStatus(string listName);
    void ResetQuantities(string listName);
+   void ResetAll(string listName);
 }

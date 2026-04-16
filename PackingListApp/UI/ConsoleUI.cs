@@ -303,8 +303,9 @@ public class ConsoleUI
                         "View List",
                         "Rename List",
                         "Delete List",
-                        "Clear All Items to Unpacked",
+                        "Reset Items to Default (Unpacked)",
                         "Reset Quantity Default (1)",
+                        "Reset All (Unpacked + Quantity Default)",
                         "Back",
                         "Save & Exit Program"));
 
@@ -330,7 +331,7 @@ public class ConsoleUI
                 DeleteListFlow(listName);
                 return;
             }
-            else if (choice == "Clear All Items to Unpacked")
+            else if (choice == "Reset Items to Default (Unpacked)")
             {
                 manager.ClearPackedStatus(listName);
                 AnsiConsole.MarkupLine("All items marked as unpacked.  View List to see all items.");
@@ -339,6 +340,11 @@ public class ConsoleUI
             {
                 manager.ResetQuantities(listName);
                 AnsiConsole.MarkupLine("All item quantities reset to default (1).");
+            }
+            else if (choice == "Reset All (Unpacked + Quantity Default)")
+            {
+                manager.ResetAll(listName);
+                AnsiConsole.MarkupLine("All items reset: unpacked + quantity set to 1.");
             }
             else if (choice == "Save & Exit Program")
             {

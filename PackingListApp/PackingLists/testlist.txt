@@ -1,2 +1,4 @@
 testlist
-safsdfasdf,1,True
+safsdfasdf,1,False
+dfgsdf,1,False
+adsfadsgadsf,1,False

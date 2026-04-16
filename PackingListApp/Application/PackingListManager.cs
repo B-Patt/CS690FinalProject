@@ -95,4 +95,11 @@ public class PackingListManager : IPackingListManager
         SaveList(list);
     }
 
+    public void ResetAll(string listName)
+    {
+        var list = LoadList(listName);
+        list.ResetAll();
+        SaveList(list);
+    }
+
 }
