@@ -1,137 +1,179 @@
 using PackingListApp.Interfaces;
 using PackingListApp.Domain;
 
-namespace PackingListApp.Application;
-
-public class PackingListManager : IPackingListManager
+namespace PackingListApp.Application
 {
-    private readonly IPackingListRepository repository;
-
-    public PackingListManager(IPackingListRepository repository)
+    public class PackingListManager : IPackingListManager
     {
-        this.repository = repository;
-    }
+        private readonly IPackingListRepository repository;
 
-    public PackingList CreateList(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name))
-            return null;
+        public PackingListManager(IPackingListRepository repository)
+        {
+            this.repository = repository;
+        }
 
-        var list = new PackingList(name);
-        repository.SaveList(list);
-        return list;
-    }
+        public PackingList CreateList(string name)
+        {
+            name = Normalize(name);
 
-    public PackingList LoadList(string name)
-    {
-        return repository.LoadList(name);
-    }
+            if (string.IsNullOrWhiteSpace(name))
+                return null;
 
-    public void SaveList(PackingList list)
-    {
-        repository.SaveList(list);
-    }
+            var list = new PackingList(name);
+            repository.SaveList(list);
+            return list;
+        }
 
-    public bool RenameList(string oldName, string newName)
-    {
-        var list = repository.LoadList(oldName);
-        if (list == null)
-            return false;
+        public PackingList LoadList(string name)
+        {
+            name = Normalize(name);
+            return repository.LoadList(name);
+        }
 
-        var allLists = repository.ListAll();
-        if (allLists.Any(n => n.Equals(newName, StringComparison.OrdinalIgnoreCase)))
-            return false;
+        public void SaveList(PackingList list)
+        {
+            repository.SaveList(list);
+        }
 
-        list.Rename(newName);
-        repository.RenameList(oldName, newName);
-        repository.SaveList(list);
+        public bool RenameList(string oldName, string newName)
+        {
+            oldName = Normalize(oldName);
+            newName = Normalize(newName);
 
-        return true;
-    }
+            var list = repository.LoadList(oldName);
+            if (list == null)
+                return false;
 
-    public void DeleteList(string name)
-    {
-        repository.DeleteList(name);
-    }
-    public void AddItem(string listName, string itemName, int quantity)
-    {
-        var list = repository.LoadList(listName);
-        list.AddItem(new PackingItem(itemName, quantity));
-        repository.SaveList(list);
-    }
+            var allLists = repository.ListAll();
+            if (allLists.Any(n => n.Equals(newName, StringComparison.OrdinalIgnoreCase)))
+                return false;
 
-    public void UpdateQuantity(string listName, string itemName, int quantity)
-    {
-        var list = repository.LoadList(listName);
-        var item = list.FindItem(itemName);
-        item.SetQuantity(quantity);
-        repository.SaveList(list);
-    }
+            list.Rename(newName);
 
-    public void RemoveItem(string listName, string itemName)
-    {
-        var list = repository.LoadList(listName);
-        list.RemoveItem(itemName);
-        repository.SaveList(list);
-    }
+            if (!repository.RenameList(oldName, newName))
+                return false;
 
-    public void TogglePacked(string listName, string itemName)
-    {
-        var list = repository.LoadList(listName);
-        list.TogglePacked(itemName);
-        repository.SaveList(list);
-    }
+            repository.SaveList(list);
 
-    public List<string> ListAll()
-    {
-        return repository.ListAll();
-    }
+            return true;
+        }
 
-    public void ClearPackedStatus(string listName)
-    {
-        var list = LoadList(listName);
-        list.ClearPackedStatus();
-        repository.SaveList(list);
-    }
+        public void DeleteList(string name)
+        {
+            name = Normalize(name);
+            repository.DeleteList(name);
+        }
 
-    public void ResetQuantities(string listName)
-    {
-        var list = LoadList(listName);
-        list.ResetQuantitiesToDefault();
-        SaveList(list);
-    }
+        public void AddItem(string listName, string itemName, int quantity)
+        {
+            listName = Normalize(listName);
 
-    public void ResetAll(string listName)
-    {
-        var list = LoadList(listName);
-        list.ResetAll();
-        SaveList(list);
-    }
+            var list = repository.LoadList(listName);
+            list.AddItem(new PackingItem(itemName, quantity));
+            repository.SaveList(list);
+        }
 
-    public IEnumerable<PackingItem> SortByQuantity(string listName, bool descending = true)
-    {
-    var list = repository.LoadList(listName);
-    var sorted = list.GetItemsSortedByQuantity(descending);
-    list.ApplySort(sorted);
-    repository.SaveList(list);
-    return sorted;
-    }
+        public void UpdateQuantity(string listName, string itemName, int quantity)
+        {
+            listName = Normalize(listName);
 
-    public IEnumerable<PackingItem> SortByPackedStatus(string listName, bool packedFirst = false)
-    {
-    var list = repository.LoadList(listName);
-    var sorted = list.GetItemsSortedByPackedStatus(packedFirst);
-    list.ApplySort(sorted);
-    repository.SaveList(list);
-    return sorted;
-    }
+            var list = repository.LoadList(listName);
+            var item = list.FindItem(itemName);
+            item.SetQuantity(quantity);
+            repository.SaveList(list);
+        }
 
-    public IEnumerable<PackingItem> SortAlphabetically(string listName)
-    {
-        var list = repository.LoadList(listName);
-        var sorted = list.GetItemsSortedAlphabetically();
-        list.ApplySort(sorted);
-        repository.SaveList(list);
-        return sorted;
+        public void RemoveItem(string listName, string itemName)
+        {
+            listName = Normalize(listName);
+
+            var list = repository.LoadList(listName);
+            list.RemoveItem(itemName);
+            repository.SaveList(list);
+        }
+
+        public void TogglePacked(string listName, string itemName)
+        {
+            listName = Normalize(listName);
+
+            var list = repository.LoadList(listName);
+            list.TogglePacked(itemName);
+            repository.SaveList(list);
+        }
+
+        public List<string> ListAll()
+        {
+            return repository.ListAll();
+        }
+
+        public void ClearPackedStatus(string listName)
+        {
+            listName = Normalize(listName);
+
+            var list = repository.LoadList(listName);
+            list.ClearPackedStatus();
+            repository.SaveList(list);
+        }
+
+        public void ResetQuantities(string listName)
+        {
+            listName = Normalize(listName);
+
+            var list = repository.LoadList(listName);
+            list.ResetQuantitiesToDefault();
+            repository.SaveList(list);
+        }
+
+        public void ResetAll(string listName)
+        {
+            listName = Normalize(listName);
+
+            var list = repository.LoadList(listName);
+            list.ResetAll();
+            repository.SaveList(list);
+        }
+
+        public IEnumerable<PackingItem> SortByQuantity(string listName, bool descending = true)
+        {
+            listName = Normalize(listName);
+
+            var list = repository.LoadList(listName);
+            var sorted = list.GetItemsSortedByQuantity(descending);
+            list.ApplySort(sorted);
+            repository.SaveList(list);
+            return sorted;
+        }
+
+        public IEnumerable<PackingItem> SortByPackedStatus(string listName, bool packedFirst = false)
+        {
+            listName = Normalize(listName);
+
+            var list = repository.LoadList(listName);
+            var sorted = list.GetItemsSortedByPackedStatus(packedFirst);
+            list.ApplySort(sorted);
+            repository.SaveList(list);
+            return sorted;
+        }
+
+        public IEnumerable<PackingItem> SortAlphabetically(string listName)
+        {
+            listName = Normalize(listName);
+
+            var list = repository.LoadList(listName);
+            var sorted = list.GetItemsSortedAlphabetically();
+            list.ApplySort(sorted);
+            repository.SaveList(list);
+            return sorted;
+        }
+
+        private string Normalize(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return "";
+
+            name = name.Trim();
+            name = Path.GetFileNameWithoutExtension(name);
+            return name;
+        }
     }
 }

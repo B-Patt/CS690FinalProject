@@ -9,7 +9,6 @@ public class TextFileStorageTests
 
     public TextFileStorageTests()
     {
-        // Temporary Directory for testing
         testDir = Path.Combine(Path.GetTempPath(), "PackingListAppTests_Storage");
 
         if (Directory.Exists(testDir))
@@ -53,7 +52,7 @@ public class TextFileStorageTests
 
         var files = storage.ListFiles();
 
-        Assert.Contains("testfile1.txt", files);
-        Assert.Contains("testfile2.txt", files);
+        Assert.Contains("testfile1", files);
+        Assert.Contains("testfile2", files);
     }
 }

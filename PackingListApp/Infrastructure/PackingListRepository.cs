@@ -19,39 +19,12 @@ namespace PackingListApp.Infrastructure
             if (string.IsNullOrWhiteSpace(contents))
                 return null;
 
-            var lines = contents
-                .Split('\n', StringSplitOptions.RemoveEmptyEntries);
-
-            var list = new PackingList(name);
-
-            foreach (var line in lines)
-            {
-                var parts = line.Split('|');
-                if (parts.Length != 3)
-                    continue;
-
-                string itemName = parts[0];
-                int quantity = int.Parse(parts[1]);
-                bool isPacked = bool.Parse(parts[2]);
-
-                list.AddItem(itemName, quantity);
-
-                if (isPacked)
-                    list.TogglePacked(itemName);
-            }
-
-            return list;
+            return PackingList.FromString(contents);
         }
 
         public void SaveList(PackingList list)
         {
-            var lines = list.Items
-                .Select(i => $"{i.Name}|{i.Quantity}|{i.IsPacked}")
-                .ToList();
-
-            string contents = string.Join(Environment.NewLine, lines);
-
-            storage.WriteFile(list.Name, contents);
+            storage.WriteFile(list.Name, list.ToString());
         }
 
         public bool RenameList(string oldName, string newName)
@@ -66,9 +39,7 @@ namespace PackingListApp.Infrastructure
 
         public List<string> ListAll()
         {
-            return storage.ListFiles()
-                .Select(f => f) // already stripped by TextFileStorage
-                .ToList();
+            return storage.ListFiles();
         }
     }
 }

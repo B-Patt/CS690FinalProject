@@ -70,8 +70,9 @@ namespace PackingListApp.Infrastructure
         public List<string> ListFiles()
         {
             return Directory.GetFiles(directoryPath, "*.txt")
-                .Select(Path.GetFileNameWithoutExtension)
+                .Select(f => Path.GetFileNameWithoutExtension(f)!)
                 .ToList();
         }
+
     }
 }
