@@ -15,8 +15,11 @@ public class ConsoleUI
 
     public void Run()
     {
+         ShowSplashScreen();
+
         while (true)
         {
+            ShowWelcomePanel();
             var choice = ShowMainMenu();
 
             switch (choice)
@@ -39,17 +42,49 @@ public class ConsoleUI
         }
     }
 
+    private void Space()
+    {
+        AnsiConsole.WriteLine();
+    }
+
+    private void ShowSplashScreen()
+    {
+        Console.Clear();
+
+        AnsiConsole.Write(
+        new FigletText("THE PACKING LIST APP")
+            .Centered()
+            .Color(Color.Aqua));     
+
+        AnsiConsole.MarkupLine("\n[grey]Press any key to continue...[/]");
+        Console.ReadKey(true);
+    }
+
     public string ShowMainMenu()
     {
         return AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("PACKING LIST MAIN MENU")
                 .AddChoices(
                     "Create New List",
                     "Load Existing List",
                     "Manage Saved List Files",
                     "Save & Exit Program"
                 ));
+    }
+
+    private void ShowWelcomePanel()
+    {
+        Console.Clear();
+        var content = new Markup("MAIN MENU").Centered();
+        var panel = new Panel(content)
+        {
+            Border = BoxBorder.Heavy,
+        };
+        panel.Header = new PanelHeader("[aqua]WELCOME[/]").Centered();
+        panel.Width = 35;
+        panel.BorderColor(Color.Aqua);
+        var paddedPanel = new Padder(panel, new Padding(0, 0, 0, 2));
+        AnsiConsole.Write(paddedPanel);
     }
 
     private void CreateNewPackingList()
@@ -60,11 +95,14 @@ public class ConsoleUI
 
         if (newList == null)
         {
-            AnsiConsole.WriteLine("Invalid list name.");
+            AnsiConsole.MarkupLine("[red]Error: List already exists or name is invalid.[/]");
+            AnsiConsole.MarkupLine("[grey]Press any key to go back...[/]");
+            Console.ReadKey(true); 
             return;
         }
 
-        AnsiConsole.WriteLine("List created.");
+        AnsiConsole.MarkupLine("List created.");
+        Space();
 
         string choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
@@ -73,9 +111,26 @@ public class ConsoleUI
 
         if (choice == "Load this list now")
         {
-            ShowListContents(newList);
+            ShowListSplashScreen(newList);
             ManageItemsMenu(newList);
         }
+    }
+
+    private void ShowListSplashScreen(PackingList list)
+    {
+        Console.Clear();
+        var content = new Markup($"[white]{list.Name} List[/]").Centered();
+        var panel = new Panel(content)
+        {
+            Border = BoxBorder.Heavy,
+        };
+        panel.Header = new PanelHeader("[aqua]ITEM MENU[/]").Centered();
+        panel.Width = 35;
+        panel.BorderColor(Color.Aqua);
+        var paddedPanel = new Padder(panel, new Padding(0, 0, 0, 1));
+        AnsiConsole.Write(paddedPanel);
+
+        ShowListContents(list);
     }
 
     private void LoadExistingPackingList()
@@ -84,7 +139,7 @@ public class ConsoleUI
 
         if (files.Count == 0)
         {
-            AnsiConsole.WriteLine("No saved lists found.");
+            AnsiConsole.MarkupLine("[red]No saved lists found.[/]");
             return;
         }
 
@@ -103,30 +158,34 @@ public class ConsoleUI
 
         if (list == null)
         {
-            AnsiConsole.WriteLine("Failed to load list.");
+            AnsiConsole.MarkupLine("[red]Failed to load list.[/]");
             return;
         }
 
-        ShowListContents(list);
+        ShowListSplashScreen(list);
         ManageItemsMenu(list);
     }
 
     private void ShowListContents(PackingList list)
     {
-        AnsiConsole.WriteLine($"Loaded list: {list.Name}");
-        AnsiConsole.WriteLine("Items:");
+        AnsiConsole.MarkupLine("[underline]Items:[/]");
+        Space();
 
         if (list.Items.Count == 0)
         {
-            AnsiConsole.WriteLine("No items yet.");
+            AnsiConsole.MarkupLine("[grey](No items yet)[/]");
+            Space();
             return;
         }
 
         foreach (var item in list.Items)
         {
-            string packed = item.IsPacked ? "Packed" : "Not Packed";
-            AnsiConsole.WriteLine($"- {item.Name} x{item.Quantity} ({packed})");
+            string status = item.IsPacked ? "[green]Packed[/]" : "[red]Not Packed[/]";
+            AnsiConsole.MarkupLine($"- {item.Name} [grey]x{item.Quantity}[/] ({status})");
         }
+
+        Space();
+        Space();
     }
 
     private void ManageItemsMenu(PackingList list)
@@ -137,7 +196,6 @@ public class ConsoleUI
         {
             choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title($"Manage Items in {list.Name}")
                     .AddChoices(
                         "Add Item",
                         "Edit Item Quantity",
@@ -181,41 +239,42 @@ public class ConsoleUI
         int qty = AnsiConsole.Ask<int>("Quantity:");
 
         manager.AddItem(list.Name, name, qty);
-
         var updated = manager.LoadList(list.Name);
 
-        AnsiConsole.WriteLine("Item added.");
-        ShowListContents(updated);
+        ShowListSplashScreen(updated);
+        AnsiConsole.MarkupLine("[green]Item added.[/]");
+        Space(); 
     }
 
     private void EditItemQuantity(PackingList list)
     {
         if (list.Items.Count == 0)
         {
-            AnsiConsole.WriteLine("No items to edit.");
+            AnsiConsole.MarkupLine("[red]No items to edit.[/]");
+            Space();
             return;
         }
 
         string itemName = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("Select an item to edit quantity")
+                .Title("[cornflowerblue]Select an item to edit quantity[/]")
                 .AddChoices(list.Items.Select(i => i.Name)));
 
         int qty = AnsiConsole.Ask<int>("New quantity:");
 
         manager.UpdateQuantity(list.Name, itemName, qty);
-
         var updated = manager.LoadList(list.Name);
 
-        AnsiConsole.WriteLine("Quantity updated.");
-        ShowListContents(updated);
+        ShowListSplashScreen(updated);
+        AnsiConsole.MarkupLine("[green]Quantity updated.[/]");
+        Space();
     }
 
     private void RemoveItemFromList(PackingList list)
     {
         if (list.Items.Count == 0)
         {
-            AnsiConsole.WriteLine("No items to remove.");
+            AnsiConsole.MarkupLine("[red]No items to remove.[/]");
             return;
         }
 
@@ -224,25 +283,28 @@ public class ConsoleUI
 
         string choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("Select an item to remove")
+                .Title("[cornflowerblue]Select an item to remove [/]")
                 .AddChoices(choices));
 
         if (choice == "Back")
+        {
+            ShowListSplashScreen(list);    
             return;
+        }
 
         manager.RemoveItem(list.Name, choice);
-
         var updated = manager.LoadList(list.Name);
 
-        AnsiConsole.WriteLine("Item removed.");
-        ShowListContents(updated);
+        ShowListSplashScreen(updated);
+        AnsiConsole.MarkupLine("[fuchsia]Item removed.[/]");
+        Space();
     }
 
     private void TogglePackedStatus(PackingList list)
     {
         if (list.Items.Count == 0)
         {
-            AnsiConsole.WriteLine("No items to update.");
+            AnsiConsole.MarkupLine("[red]No items to update.[/]");
             return;
         }
 
@@ -251,18 +313,21 @@ public class ConsoleUI
 
         string choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("Select an item to toggle packed status")
+                .Title("[cornflowerblue]Select an item to toggle packed status[/]")
                 .AddChoices(choices));
 
         if (choice == "Back")
+        {
+            ShowListSplashScreen(list);
             return;
+        }
 
         manager.TogglePacked(list.Name, choice);
-
         var updated = manager.LoadList(list.Name);
 
-        AnsiConsole.WriteLine("Packed status updated.");
-        ShowListContents(updated);
+        ShowListSplashScreen(updated);
+        AnsiConsole.MarkupLine("[green]Packed status updated.[/]");
+        Space();
     }
 
     private void ShowSavedListsMenu()
@@ -271,7 +336,7 @@ public class ConsoleUI
 
         if (lists.Count == 0)
         {
-            AnsiConsole.WriteLine("No saved lists found.");
+            AnsiConsole.MarkupLine("[red]No saved lists found.[/]");
             return;
         }
 
@@ -293,15 +358,31 @@ public class ConsoleUI
         ShowListActionsMenu(choice);
     }
 
+    private void ManagementSplashScreen(string listName)
+    {
+        Console.Clear();
+        var content = new Markup($"[white]{listName} List[/]").Centered();
+        var panel = new Panel(content)
+        {
+            Border = BoxBorder.Heavy,
+        };
+        panel.Header = new PanelHeader("[aqua]FILE MANAGEMENT MENU[/]").Centered();
+        panel.Width = 35;
+        panel.BorderColor(Color.Aqua);
+        var paddedPanel = new Padder(panel, new Padding(0, 0, 0, 2));
+        AnsiConsole.Write(paddedPanel);
+    }
+
     private void ShowListActionsMenu(string listName)
     {
         string choice;
 
         do
         {
+            ManagementSplashScreen(listName);
+
             choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title($"Manage \"{listName}\"")
                     .AddChoices(
                         "View List",
                         "Rename List",
@@ -314,31 +395,28 @@ public class ConsoleUI
 
             if (choice == "View List")
             {
-                var list = manager.LoadList(listName);
-
+                var list = manager.LoadList(listName); 
                 if (list == null)
                 {
-                    AnsiConsole.WriteLine("List could not be found.");
+                    AnsiConsole.MarkupLine("[red]List could not be found.[/]");
                     return;
                 }
-
-                ShowListContents(list);
+                ShowListSplashScreen(list);
                 ManageItemsMenu(list);
             }
             else if (choice == "Rename List")
             {
                 var newName = AnsiConsole.Ask<string>("Enter new name:");
-
                 bool success = manager.RenameList(listName, newName);
 
                 if (!success)
                 {
-                    AnsiConsole.MarkupLine("Rename failed: name already exists or list not found.");
+                    AnsiConsole.MarkupLine("[red]Rename failed: name already exists or list not found.[/]");
                     return;
                 }
 
-                AnsiConsole.MarkupLine("List renamed successfully!");
-
+                AnsiConsole.MarkupLine("[green]List renamed successfully![/]");
+                Space();
                 listName = newName;
             }
             else if (choice == "Delete List")
@@ -350,16 +428,25 @@ public class ConsoleUI
             {
                 manager.ClearPackedStatus(listName);
                 AnsiConsole.MarkupLine("All items marked as unpacked.");
+                Space();
+                AnsiConsole.MarkupLine("[grey]Press any key to continue...[/]");
+                Console.ReadKey(true);
             }
             else if (choice == "Reset Quantity Default (1)")
             {
                 manager.ResetQuantities(listName);
                 AnsiConsole.MarkupLine("All item quantities reset to 1.");
+                Space();
+                AnsiConsole.MarkupLine("[grey]Press any key to continue...[/]");
+                Console.ReadKey(true);    
             }
             else if (choice == "Reset All (Unpacked + Quantity Default)")
             {
                 manager.ResetAll(listName);
                 AnsiConsole.MarkupLine("All items reset.");
+                Space();
+                AnsiConsole.MarkupLine("[grey]Press any key to continue...[/]");
+                Console.ReadKey(true);
             }
             else if (choice == "Save & Exit Program")
             {
@@ -377,16 +464,18 @@ public class ConsoleUI
                 .AddChoices("Yes", "No"));
 
         if (confirm == "Yes")
+        {
             manager.DeleteList(listName);
-
-        AnsiConsole.WriteLine("List deleted.");
+            AnsiConsole.MarkupLine("[red]List deleted.[/]");
+            Space();
+        }
     }
 
     private void ShowSortingMenu(string listName)
     {
         var choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title($"Sorting Options for {listName}")
+                .Title($"[cornflowerblue]Sorting Options for {listName}[/]")
                 .AddChoices(
                     "Quantity (High to Low)",
                     "Quantity (Low to High)",
@@ -400,28 +489,23 @@ public class ConsoleUI
             case "Quantity (High to Low)":
                 manager.SortByQuantity(listName, true);
                 break;
-
             case "Quantity (Low to High)":
                 manager.SortByQuantity(listName, false);
                 break;
-
             case "Packed Status (Not Packed First)":
                 manager.SortByPackedStatus(listName, true);
                 break;
-
             case "Packed Status (Packed First)":
                 manager.SortByPackedStatus(listName, false);
                 break;
-
             case "Alphabetical (A to Z)":
                 manager.SortAlphabetically(listName);
                 break;
-
             case "Back":
                 return;
         }
 
         var updated = manager.LoadList(listName);
-        ShowListContents(updated);
+        ShowListSplashScreen(updated);
     }
 }
