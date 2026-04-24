@@ -15,10 +15,14 @@ namespace PackingListApp.Application
         public PackingList CreateList(string name)
         {
             name = Normalize(name);
+            if (string.IsNullOrWhiteSpace(name)) return null;
 
-            if (string.IsNullOrWhiteSpace(name))
-                return null;
+            var existing = repository.ListAll()
+                .Select(f => Path.GetFileNameWithoutExtension(f));
 
+            if (existing.Contains(name, StringComparer.OrdinalIgnoreCase))
+                return null; 
+                
             var list = new PackingList(name);
             repository.SaveList(list);
             return list;
